@@ -1,6 +1,6 @@
-package de.joeakeem.spigotmc.plugin.template.event;
+package me.ksharda.spigotmc.plugin.mcspeedrunvs.event;
 
-import de.joeakeem.spigotmc.plugin.template.TemplatePlugin;
+import me.ksharda.spigotmc.plugin.mcspeedrunvs.TemplatePlugin;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;

@@ -19,9 +19,11 @@ class SpeedrunCommand(val game: SpeedrunGame) : CommandExecutor {
             when (args[0]) {
                 "create" -> {
                     game.startQueuing()
+                    sender.sendMessage("Started new Speedrun VS game. You are currently the only player.")
                 }
                 "start" -> {
                     game.start()
+                    sender.sendMessage("Starting game!")
                     // TODO teleport all the players
                 }
                 "teams" -> {
@@ -34,18 +36,24 @@ class SpeedrunCommand(val game: SpeedrunGame) : CommandExecutor {
                             map.set(teamName, map.getOrDefault(teamName, mutableListOf()))
                             map.get(teamName)!!.add(player.displayName)
                         }
-                        sender.sendMessage(map.toString())
+                        sender.sendMessage("Current teams: $map")
                     }
                     else {
                         when (args[1]) {
                             "create" -> {
                                 game.createTeam(sender, args[2])
+                                sender.sendMessage("Created team ${args[2]} with you as the first player.")
                             }
                             "autoassign" -> {
                                 game.autoAssignTeams(Bukkit.getOnlinePlayers())
+                                sender.sendMessage("Autoassigned teams.")
                             }
                             "join" -> {
                                 game.joinTeam(sender, args[2])
+                                sender.sendMessage("Joined team ${args[2]}.")
+                            }
+                            else -> {
+                                sender.sendMessage("Invalid teams command.")
                             }
                         }
                     }

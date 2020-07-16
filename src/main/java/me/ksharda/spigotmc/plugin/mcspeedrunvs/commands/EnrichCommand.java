@@ -1,4 +1,4 @@
-package de.joeakeem.spigotmc.plugin.template.commands;
+package me.ksharda.spigotmc.plugin.mcspeedrunvs.commands;
 
 import org.bukkit.Material;
 import org.bukkit.command.Command;

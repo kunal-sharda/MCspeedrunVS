@@ -1,7 +1,7 @@
-package de.joeakeem.spigotmc.plugin.template;
+package me.ksharda.spigotmc.plugin.mcspeedrunvs;
 
-import de.joeakeem.spigotmc.plugin.template.commands.*;
-import de.joeakeem.spigotmc.plugin.template.event.MovementListener;
+import me.ksharda.spigotmc.plugin.mcspeedrunvs.commands.*;
+import me.ksharda.spigotmc.plugin.mcspeedrunvs.commands.EnrichCommand;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class TemplatePlugin extends JavaPlugin {

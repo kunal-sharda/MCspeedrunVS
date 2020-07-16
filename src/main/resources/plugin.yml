@@ -2,3 +2,8 @@ name: MCSpeedrunVS
 version: 1.0
 api-version: 1.13
 main: io.github.rektinpieces.mcspeedrunvs.Plugin
+
+commands:
+  sr:
+    description: MC Speedrun VS
+    usage: /<command>

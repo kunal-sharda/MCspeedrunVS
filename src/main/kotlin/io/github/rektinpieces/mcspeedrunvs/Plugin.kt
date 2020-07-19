@@ -7,8 +7,8 @@ import org.bukkit.plugin.java.JavaPlugin
 
 class Plugin : JavaPlugin() {
     override fun onEnable() {
-        server.pluginManager.registerEvents(AdvancementListener(), this)
         val game = SpeedrunGame()
+        server.pluginManager.registerEvents(AdvancementListener(game), this)
         getCommand("sr")!!.setExecutor(SpeedrunCommand(game))
         logger.info("Enabled MCSpeedrunVS")
     }

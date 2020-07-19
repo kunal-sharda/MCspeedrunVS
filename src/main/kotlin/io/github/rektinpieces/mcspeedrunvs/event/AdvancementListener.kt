@@ -17,6 +17,7 @@ class AdvancementListener(private val game: SpeedrunGame) : Listener {
             val winningTeam = game.getTeams()[player];
             broadcastMessage("The game has ended!")
             broadcastMessage("The winning team is $winningTeam!")
+            game.end()
         }
 
     }

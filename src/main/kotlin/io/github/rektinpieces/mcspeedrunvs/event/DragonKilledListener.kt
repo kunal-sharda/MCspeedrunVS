@@ -3,26 +3,24 @@ package io.github.rektinpieces.mcspeedrunvs.event
 import io.github.rektinpieces.mcspeedrunvs.data.SpeedrunGame
 import org.bukkit.Bukkit
 import org.bukkit.Bukkit.broadcastMessage
+import org.bukkit.entity.EnderDragon
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
-import org.bukkit.event.player.PlayerAdvancementDoneEvent
-import org.bukkit.scoreboard.DisplaySlot
+import org.bukkit.event.entity.EntityDeathEvent
 
 
-class AdvancementListener(private val game: SpeedrunGame) : Listener {
-
+class DragonKilledListener(private val game: SpeedrunGame) : Listener {
     @EventHandler
-    fun onEnderDragonKilled(event: PlayerAdvancementDoneEvent) {
-        if (event.advancement.key.key == "end/kill_dragon") {
-            val player = event.player
+    fun onEnderDragonDeath(e: EntityDeathEvent) {
+        if (e.entity is EnderDragon) {
+            val player = e.entity.killer!!
             val winningTeam = game.getTeams()[player];
-            broadcastMessage("The game has ended!")
+            broadcastMessage("The game has ended! ${player.displayName} has killed the Ender Dragon!")
             broadcastMessage("The winning team is $winningTeam!")
             // Remove scoreboard
             Bukkit.getScoreboardManager()!!.mainScoreboard.getObjective("time")!!.unregister()
             game.end()
         }
-
     }
 
 }

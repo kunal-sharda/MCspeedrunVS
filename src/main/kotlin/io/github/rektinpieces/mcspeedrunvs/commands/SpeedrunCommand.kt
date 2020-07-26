@@ -1,12 +1,14 @@
 package io.github.rektinpieces.mcspeedrunvs.commands
 
+import io.github.rektinpieces.mcspeedrunvs.data.GameStage
 import io.github.rektinpieces.mcspeedrunvs.data.SpeedrunGame
 import org.bukkit.Bukkit
 import org.bukkit.command.Command
 import org.bukkit.command.CommandExecutor
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
-import java.lang.IndexOutOfBoundsException
+import org.bukkit.scoreboard.DisplaySlot
+
 
 class SpeedrunCommand(private val game: SpeedrunGame) : CommandExecutor {
     override fun onCommand(sender: CommandSender, command: Command, label: String, args: Array<out String>): Boolean {
@@ -14,27 +16,39 @@ class SpeedrunCommand(private val game: SpeedrunGame) : CommandExecutor {
             sender.sendMessage("Command can only be called from a player.")
             return false
         }
-        
+
         try {
             when (args[0]) {
                 "create" -> {
+                    if (game.stage != GameStage.NOT_PLAYING) {
+                        sender.sendMessage("You are currently already in a game.")
+                        return false
+                    }
                     game.startQueuing()
                     sender.sendMessage("Started new Speedrun VS game. You are currently the only player.")
                 }
                 "start" -> {
+                    if (game.stage != GameStage.QUEUING) {
+                        sender.sendMessage("You are not currently queuing for a game.")
+                        return false
+                    }
                     game.start()
                     sender.sendMessage("Starting game!")
                     // TODO teleport all the players
                 }
                 "teams" -> {
+                    if (game.stage != GameStage.QUEUING) {
+                        sender.sendMessage("You are not currently queuing for a game.")
+                        return false
+                    }
                     if (args.size == 1) {
                         // Send teams instead
                         val teams = game.getTeams()
                         val map = mutableMapOf<String, MutableList<String>>()
                         for ( (player, teamName) in teams) {
                             // TODO this is kinda bad code
-                            map.set(teamName, map.getOrDefault(teamName, mutableListOf()))
-                            map.get(teamName)!!.add(player.displayName)
+                            map[teamName] = map.getOrDefault(teamName, mutableListOf())
+                            map[teamName]!!.add(player.displayName)
                         }
                         sender.sendMessage("Current teams: $map")
                     }
@@ -59,10 +73,15 @@ class SpeedrunCommand(private val game: SpeedrunGame) : CommandExecutor {
                     }
                 }
                 "end" -> {
+                    if (game.stage != GameStage.PLAYING) {
+                        sender.sendMessage("You are not currently playing a game.")
+                        return false
+                    }
                     game.end()
+                    sender.sendMessage("Game has been successfully ended.")
                 }
                 "status" -> {
-                    sender.sendMessage(game.stage.toString())
+                    sender.sendMessage("You are currently ${game.stage}")
                 }
                 else -> sender.sendMessage("Unknown command.")
             }

@@ -56,7 +56,6 @@ class SpeedrunGame(private val plugin: Plugin) {
 
     fun end() {
         stage = GameStage.NOT_PLAYING
-        stopwatch.stop()
         scoreboardObjective.displaySlot = null
     }
 

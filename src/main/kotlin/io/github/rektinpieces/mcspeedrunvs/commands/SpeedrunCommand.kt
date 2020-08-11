@@ -33,7 +33,7 @@ class SpeedrunCommand(private val game: SpeedrunGame) : CommandExecutor {
                         return false
                     }
                     game.start()
-                    sender.sendMessage("Starting game!")
+                    Bukkit.broadcastMessage("Starting game!")
                     // TODO teleport all the players
                 }
                 "teams" -> {
@@ -78,7 +78,7 @@ class SpeedrunCommand(private val game: SpeedrunGame) : CommandExecutor {
                         return false
                     }
                     game.end()
-                    sender.sendMessage("Game has been successfully ended.")
+                    Bukkit.broadcastMessage("Game has been successfully ended.")
                 }
                 "status" -> {
                     sender.sendMessage("You are currently ${game.stage}")

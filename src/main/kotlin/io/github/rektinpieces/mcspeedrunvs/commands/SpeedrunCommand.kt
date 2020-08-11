@@ -25,7 +25,7 @@ class SpeedrunCommand(private val game: SpeedrunGame) : CommandExecutor {
                         return false
                     }
                     game.startQueuing()
-                    sender.sendMessage("Started new Speedrun VS game. You are currently the only player.")
+                    Bukkit.broadcastMessage("Started new Speedrun VS game!")
                 }
                 "start" -> {
                     if (game.stage != GameStage.QUEUING) {

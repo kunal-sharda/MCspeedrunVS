@@ -1,9 +1,11 @@
 package io.github.rektinpieces.mcspeedrunvs.event
 
+import io.github.rektinpieces.mcspeedrunvs.data.GameStage
 import io.github.rektinpieces.mcspeedrunvs.data.SpeedrunGame
 import net.md_5.bungee.api.ChatMessageType
 import net.md_5.bungee.api.chat.TextComponent
 import org.bukkit.Bukkit
+import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
@@ -28,13 +30,20 @@ class CompassListener(private val game: SpeedrunGame) : Listener {
         if (player.inventory.itemInMainHand.type != Material.COMPASS) {
             return
         }
+        // We have to be playing a game to run the handler
+        if (game.stage != GameStage.PLAYING) {
+            return
+        }
+
         when (event.action) {
             Action.LEFT_CLICK_AIR, Action.LEFT_CLICK_BLOCK -> {
                 compassModes[player] = CompassMode.ALLY_CYCLE
+                player.sendMessage("Switched to pointing toward allies.")
                 selectIndex[player] = selectIndex.getValue(player) + 1
             }
             Action.RIGHT_CLICK_AIR, Action.RIGHT_CLICK_BLOCK -> {
                 compassModes[player] = CompassMode.ENEMY_CYCLE
+                player.sendMessage("Switched to pointing toward enemies.")
                 selectIndex[player] = selectIndex.getValue(player) + 1
             }
             Action.PHYSICAL -> {
@@ -51,6 +60,12 @@ class CompassListener(private val game: SpeedrunGame) : Listener {
     fun changeCompassPosition() {
         val teams = game.getTeams()
         val players = Bukkit.getOnlinePlayers()
+
+        // Make sure we are playing a game before running the listener
+        if (game.stage != GameStage.PLAYING) {
+            return
+        }
+
         // Player must be in a team
         players.filter { teams[it] != null }
                 // Calculate compass position!
@@ -69,6 +84,8 @@ class CompassListener(private val game: SpeedrunGame) : Listener {
                                 .sortedBy { player.location.distance(it.location) }
                     }
                     if (targets.isEmpty()) {
+                        // Reset compass toward spawn if no targets are found
+                        player.compassTarget = Location(Bukkit.getWorld("world"), 0.0, 0.0, 0.0)
                         return
                     }
 

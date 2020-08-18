@@ -8,11 +8,15 @@ import org.bukkit.Bukkit
 import org.bukkit.command.Command
 import org.bukkit.command.CommandExecutor
 import org.bukkit.command.CommandSender
+import org.bukkit.command.TabExecutor
 import org.bukkit.entity.Player
 import org.bukkit.scoreboard.DisplaySlot
+import java.util.*
 
+private val ROOT_COMMANDS = listOf("create", "teams", "start", "end", "status")
+private val TEAMS_COMMANDS = listOf("create", "join", "autoassign")
 
-class SpeedrunCommand(private val game: SpeedrunGame) : CommandExecutor {
+class SpeedrunCommand(private val game: SpeedrunGame) : TabExecutor {
     override fun onCommand(sender: CommandSender, command: Command, label: String, args: Array<out String>): Boolean {
         if (sender !is Player) {
             sender.srMessage("Command can only be called from a player.")
@@ -95,5 +99,17 @@ class SpeedrunCommand(private val game: SpeedrunGame) : CommandExecutor {
             return false
         }
         return true
+    }
+
+    override fun onTabComplete(sender: CommandSender, command: Command, alias: String, args: Array<out String>): List<String> {
+        if (args.isEmpty() || args.size > 2) {
+            return listOf()
+        }
+
+        return when (args[0]) {
+            "" -> ROOT_COMMANDS
+            "teams" -> TEAMS_COMMANDS
+            else -> listOf()
+        }
     }
 }

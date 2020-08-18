@@ -18,7 +18,9 @@ class Plugin : JavaPlugin() {
         // Schedule compass position updating task
         server.scheduler.runTaskTimer(this, compassListener::changeCompassPosition, 20, 20)
 
-        getCommand("sr")!!.setExecutor(SpeedrunCommand(game))
+        getCommand("sr")!!.apply {
+            setExecutor(SpeedrunCommand(game))
+        }
 
         logger.info("Enabled MCSpeedrunVS")
     }

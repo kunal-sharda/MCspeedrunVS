@@ -85,7 +85,10 @@ class SpeedrunCommand(private val game: SpeedrunGame) : CommandExecutor {
                 "status" -> {
                     sender.srMessage("You are currently ${game.stage}")
                 }
-                else -> sender.srMessage("Unknown command.")
+                else -> {
+                    sender.srMessage("Unknown command.")
+                    return false
+                }
             }
         } catch (e: IndexOutOfBoundsException) {
             sender.srMessage("Invalid arguments.")

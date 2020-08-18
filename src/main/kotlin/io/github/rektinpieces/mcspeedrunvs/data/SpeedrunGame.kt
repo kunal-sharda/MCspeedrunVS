@@ -31,7 +31,6 @@ class SpeedrunGame(private val plugin: Plugin) {
                 val elapsedSec = (stopwatch.time / 1000).toInt()
                 Bukkit.getScoreboardManager()!!.mainScoreboard
                         .getObjective("time")?.getScore("Time")!!.score = elapsedSec
-
             }
         }.runTaskTimer(plugin, 20, 20)
     }

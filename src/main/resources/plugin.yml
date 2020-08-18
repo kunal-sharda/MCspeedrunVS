@@ -5,5 +5,13 @@ main: io.github.rektinpieces.mcspeedrunvs.Plugin
 
 commands:
   sr:
-    description: MC Speedrun VS
-    usage: /<command>
+    description: MC Speedrun VS management commands
+    usage: |
+      /<command> create - create a new speedrun vs and start queuing
+      /<command> teams create <name> - create a team and add yourself as the first member
+      /<command> teams join <name> - join a team with name <name>
+      /<command> teams autoassign - autoassign players to existing teams
+      /<command> teams - list current players on a team
+      /<command> start - start a game
+      /<command> end - end a game
+      /<command> status - get the status of the current speedrun game

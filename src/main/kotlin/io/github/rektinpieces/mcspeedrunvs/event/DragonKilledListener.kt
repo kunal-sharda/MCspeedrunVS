@@ -17,8 +17,6 @@ class DragonKilledListener(private val game: SpeedrunGame) : Listener {
             val winningTeam = game.getTeams()[player];
             chatBroadcast("${player.displayName} has ended the game!")
             chatBroadcast("The winning team is $winningTeam!")
-            // Remove scoreboard
-            Bukkit.getScoreboardManager()!!.mainScoreboard.getObjective("time")!!.unregister()
             game.end()
         }
     }

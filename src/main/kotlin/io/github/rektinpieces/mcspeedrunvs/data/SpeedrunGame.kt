@@ -33,6 +33,10 @@ class SpeedrunGame(private val plugin: Plugin) {
     private fun createBoard() {
         // Create the Board from a new scoreboard
         for(player: Player in Bukkit.getOnlinePlayers()) {
+            if (!teamsMap.contains(player)) {
+                return // Player isn't playing the game
+            }
+
             val board = Bukkit.getScoreboardManager()!!.newScoreboard
 
             // Create objective and set the Game Name, Player Team, and Time
@@ -44,7 +48,7 @@ class SpeedrunGame(private val plugin: Plugin) {
             score1.score = 3
             val score2 = obj.getScore("" + ChatColor.AQUA + "Team: " + getPlayerTeam(player))
             score2.score = 2
-            val score3 = obj.getScore("" + ChatColor.RED + "Speedrun Time: " + stopwatch.time)
+            val score3 = obj.getScore("" + ChatColor.RED + "Speedrun Time: " + (stopwatch.time / 1000).toInt())
             score3.score = 1
 
             // Update scoreboard
@@ -70,6 +74,7 @@ class SpeedrunGame(private val plugin: Plugin) {
 
     fun end() {
         stage = GameStage.NOT_PLAYING
+        task?.cancel()
         for (player: Player in Bukkit.getOnlinePlayers()) {
             player.scoreboard = Bukkit.getScoreboardManager()!!.mainScoreboard
         }

@@ -1,11 +1,17 @@
 package io.github.rektinpieces.mcspeedrunvs.data
 
+import com.google.common.base.Stopwatch
 import io.github.rektinpieces.mcspeedrunvs.Plugin
 import org.apache.commons.lang.time.StopWatch
 import org.bukkit.Bukkit
+import org.bukkit.ChatColor
 import org.bukkit.entity.Player
 import org.bukkit.scheduler.BukkitRunnable
+import org.bukkit.scheduler.BukkitScheduler
+import org.bukkit.scheduler.BukkitTask
 import org.bukkit.scoreboard.DisplaySlot
+import org.bukkit.scoreboard.Score
+import org.bukkit.scoreboard.ScoreboardManager
 
 enum class GameStage {
     NOT_PLAYING, QUEUING, PLAYING
@@ -17,27 +23,34 @@ enum class GameStage {
 class SpeedrunGame(private val plugin: Plugin) {
     private val teamsMap = mutableMapOf<Player, String>()
 
-    // Either create the objective if it doesn't exist, or get it if it does
-    private val scoreboardObjective = Bukkit.getScoreboardManager()!!.mainScoreboard.getObjective("time")
-            ?: Bukkit.getScoreboardManager()!!.mainScoreboard.registerNewObjective("time", "dummy", "Time")
-
-    init {
-        // Hide scoreboard on start, because we start out not in a game
-        scoreboardObjective.displaySlot = null
-
-        // Update the scoreboard objective in the background
-        object : BukkitRunnable() {
-            override fun run() {
-                val elapsedSec = (stopwatch.time / 1000).toInt()
-                Bukkit.getScoreboardManager()!!.mainScoreboard
-                        .getObjective("time")?.getScore("Time")!!.score = elapsedSec
-            }
-        }.runTaskTimer(plugin, 20, 20)
-    }
-
+    // Start the game timer
     var stage = GameStage.NOT_PLAYING
         private set
     private val stopwatch = StopWatch()
+
+    private var task: BukkitTask? = null
+
+    private fun createBoard() {
+        // Create the Board from a new scoreboard
+        for(player: Player in Bukkit.getOnlinePlayers()) {
+            val board = Bukkit.getScoreboardManager()!!.newScoreboard
+
+            // Create objective and set the Game Name, Player Team, and Time
+            val obj = board.registerNewObjective("MCSp", "dummy",
+                    ChatColor.translateAlternateColorCodes('&', "&a&1MCSpeedrunVS &a&1"))
+
+            obj.displaySlot = DisplaySlot.SIDEBAR
+            val score1 = obj.getScore("" + ChatColor.RED + "------------------")
+            score1.score = 3
+            val score2 = obj.getScore("" + ChatColor.AQUA + "Team: " + getPlayerTeam(player))
+            score2.score = 2
+            val score3 = obj.getScore("" + ChatColor.RED + "Speedrun Time: " + stopwatch.time)
+            score3.score = 1
+
+            // Update scoreboard
+            player.scoreboard = board
+        }
+    }
 
     fun startQueuing() {
         stage = GameStage.QUEUING
@@ -49,13 +62,18 @@ class SpeedrunGame(private val plugin: Plugin) {
         stage = GameStage.PLAYING
         stopwatch.reset()
         stopwatch.start()
+
         // Show the scoreboard objective
-        scoreboardObjective.displaySlot = DisplaySlot.SIDEBAR
+        task = Bukkit.getScheduler().runTaskTimer(plugin, this::createBoard, 0, 20)
+
     }
 
     fun end() {
         stage = GameStage.NOT_PLAYING
-        scoreboardObjective.displaySlot = null
+        for (player: Player in Bukkit.getOnlinePlayers()) {
+            player.scoreboard = Bukkit.getScoreboardManager()!!.mainScoreboard
+        }
+
     }
 
     fun createTeam(from: Player, name: String) {
@@ -67,14 +85,18 @@ class SpeedrunGame(private val plugin: Plugin) {
     }
 
     fun joinTeam(player: Player, name: String) {
-        teamsMap[player] = name;
+        teamsMap[player] = name
     }
 
     fun autoAssignTeams(players: Collection<Player>) {
         // TODO
     }
 
+    fun getPlayerTeam(player: Player): String {
+       return getTeams().getValue(player)
+    }
+
     fun getTeams(): Map<Player, String> {
-        return teamsMap;
+        return teamsMap
     }
 }

@@ -11,6 +11,7 @@ import org.bukkit.scheduler.BukkitScheduler
 import org.bukkit.scheduler.BukkitTask
 import org.bukkit.scoreboard.DisplaySlot
 import org.bukkit.scoreboard.Score
+import org.bukkit.scoreboard.Scoreboard
 import org.bukkit.scoreboard.ScoreboardManager
 
 enum class GameStage {
@@ -29,6 +30,7 @@ class SpeedrunGame(private val plugin: Plugin) {
     private val stopwatch = StopWatch()
 
     private var task: BukkitTask? = null
+    private var sb: Scoreboard? = null
 
     private fun createBoard() {
         // Create the Board from a new scoreboard
@@ -38,6 +40,21 @@ class SpeedrunGame(private val plugin: Plugin) {
             }
 
             val board = Bukkit.getScoreboardManager()!!.newScoreboard
+
+            // Sort players in tab list (magic code inbound)
+            val map = mutableMapOf<String, MutableList<String>>()
+            for ( (player, teamName) in teamsMap) {
+                // TODO this is kinda bad code
+                map[teamName] = map.getOrDefault(teamName, mutableListOf())
+                map[teamName]!!.add(player.name)
+            }
+            map.forEach { teamEntry ->
+                val team = board.registerNewTeam(teamEntry.key)
+                team.prefix = "[${teamEntry.key}] "
+                teamEntry.value.forEach {
+                    team.addEntry(it)
+                }
+            }
 
             // Create objective and set the Game Name, Player Team, and Time
             val obj = board.registerNewObjective("MCSp", "dummy",
@@ -69,7 +86,6 @@ class SpeedrunGame(private val plugin: Plugin) {
 
         // Show the scoreboard objective
         task = Bukkit.getScheduler().runTaskTimer(plugin, this::createBoard, 0, 20)
-
     }
 
     fun end() {
